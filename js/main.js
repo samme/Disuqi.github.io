@@ -48,7 +48,7 @@ function preload() {
 
 function create() {
     //background
-    this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(0.6);
+    this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(0.7);
 
     //door
     door = this.physics.add.image(200, 610, 'door');
@@ -132,7 +132,7 @@ function create() {
     cursors = this.input.keyboard.createCursorKeys();
     this.gameOver = false;
 }
-let x = 0
+
 
 function update() {
 
@@ -195,8 +195,9 @@ function hitBomb(player, bomb) {
 
 function openDoor(player, door) {
     if (hasKey == true && player.body.touching.down) {
+        player.disableBody();
         player.anims.play('die');
-        level = 1;
+        level += 1;
         createLevel(level);
         console.log('touched')
     }
@@ -217,11 +218,14 @@ function createLevel(currentlevel) {
             platforms.create(85, 350, 'platform');
             platforms.create(197, 350, 'platform');
             platforms.create(500, 200, 'platform');
-        default:
+            break;
+        case 1:
             platforms.create(480, 680, 'ground');
             platforms.create(1446, 680, 'ground');
             platforms.create(85, 350, 'platform');
             platforms.create(197, 350, 'platform');
-            platforms.create(500, 200, 'platform');
+            platforms.create(500, 300, 'platform');
+            platforms.create(100, 100, 'platform');
+            break;
     }
 }
