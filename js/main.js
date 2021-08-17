@@ -48,7 +48,7 @@ function preload() {
 
 function create() {
     //background
-    this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(0.7);
+    this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(0.67);
 
     //door
     door = this.physics.add.image(200, 610, 'door');
