@@ -35,6 +35,19 @@ let scoreText;
 let hasKey = false;
 let level = 0;
 
+//Text
+const welcome = 'Welcome to my Website!\nMy name is Disuqi Hijazi, I am a university student.\n' +
+    'I go to Salford University and I am studying computer science\n' +
+    'This webstie is all about me, my projects, education, work experience\n' +
+    'but you have to play the game to see all the information!\n' +
+    'I Hope you\'ll like it!';
+const aboutMe = 'I am a hardworking, reliable, and responsible individual who is confident and enjoys taking on challenges\n' +
+    'and actively working on any criticism I may receive.\n' +
+    'Ambitious and diligent in all my work to ensure any given tasks are completed in the best quality manner.\n' +
+    'I am capable and happy to work independently or unsupervised. Moreover, I am friendly and compassionate\n' +
+    'which enables me to remain level-headed and interact with customers to ensure the best experience is provided.\n' +
+    'I am currently a student at Salford University, studying computer science and looking for an internship or part-time job in the Technological industry.';
+
 function preload() {
     this.load.image('background', 'images/background.jpg');
     this.load.image('ground', 'images/ground.png');
@@ -81,8 +94,11 @@ function create() {
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
         child.setScale(0.7);
     });
-    //score
-    scoreText = this.add.text(16, 16, 'Score:0', { fontSize: '32px', fill: '#139' });
+
+    //Text 
+    welcomeText = this.add.text(300, 220, welcome, { fontSize: '32px', fontFamily: 'Munro', fill: '#003366' });
+    //  score
+    scoreText = this.add.text(16, 16, 'Score:0', { fontSize: '32px', fill: '#ccffff', fontFamily: 'Arcade Interlaced' });
 
     //bombs
     bombs = this.physics.add.group();
@@ -195,7 +211,6 @@ function hitBomb(player, bomb) {
 
 function openDoor(player, door) {
     if (hasKey == true && player.body.touching.down) {
-        player.disableBody();
         player.anims.play('die');
         level += 1;
         createLevel(level);
@@ -227,5 +242,13 @@ function createLevel(currentlevel) {
             platforms.create(500, 300, 'platform');
             platforms.create(100, 100, 'platform');
             break;
+        default:
+            platforms.create(480, 680, 'ground');
+            platforms.create(1446, 680, 'ground');
+            platforms.create(85, 350, 'platform');
+            platforms.create(197, 350, 'platform');
+            platforms.create(500, 200, 'platform');
+            break;
+
     }
 }
