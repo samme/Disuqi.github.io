@@ -54,8 +54,9 @@ function preload() {
     this.load.image('platform', 'images/grass_4x1.png');
     this.load.image('coin', 'images/coin.png');
     this.load.image('bomb', 'images/bomb.png');
-    this.load.image('door', 'images/door.png');
     this.load.image('key', 'images/key.png');
+    this.load.image('house', 'images/house.png')
+    this.load.spritesheet('door', 'images/door.png', { frameWidth: 70, frameHeight: 93 })
     this.load.spritesheet('player', 'images/FinnSprite.png', { frameWidth: 15, frameHeight: 20, margin: 6, spacing: 17 });
 }
 
@@ -63,26 +64,22 @@ function create() {
     //background
     this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(0.67);
 
-    //door
-    door = this.physics.add.image(200, 610, 'door');
-    door.setScale(0.2);
-    door.body.allowGravity = false;
-
     //key
     key = this.physics.add.image(800, 590, 'key');
     key.setScale(0.05);
     key.body.allowGravity = false;
     var tween = this.tweens.add({
-            targets: key,
-            y: '+=10',
-            ease: 'Linear',
-            duration: 800,
-            yoyo: true,
-            repeat: -1,
-        })
-        //platforms
+        targets: key,
+        y: '+=10',
+        ease: 'Linear',
+        duration: 800,
+        yoyo: true,
+        repeat: -1,
+    })
+
+    //platforms
     platforms = this.physics.add.staticGroup();
-    createLevel(level);
+    createLevel(level, this);
 
     //coins
     coins = this.physics.add.group({
@@ -95,19 +92,18 @@ function create() {
         child.setScale(0.7);
     });
 
-    //Text 
-    welcomeText = this.add.text(300, 220, welcome, { fontSize: '32px', fontFamily: 'Munro', fill: '#003366' });
     //  score
     scoreText = this.add.text(16, 16, 'Score:0', { fontSize: '32px', fill: '#ccffff', fontFamily: 'Arcade Interlaced' });
 
-    //bombs
-    bombs = this.physics.add.group();
+    // Text group
 
-    //player & his animations
+    //players
     player = this.physics.add.sprite(100, 450, 'player').setScale(2);
 
     player.setCollideWorldBounds(true);
 
+    //All animations
+    //  Player animations
     this.anims.create({
         key: 'run',
         frames: this.anims.generateFrameNumbers('player', { start: 9, end: 14 }),
@@ -135,11 +131,10 @@ function create() {
         frameRate: 6,
     });
 
+
     //collissions and overlaps
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(coins, platforms);
-    this.physics.add.collider(bombs, platforms);
-    this.physics.add.collider(player, bombs, hitBomb, null, this);
     this.physics.add.overlap(player, coins, collectCoin, null, this);
     this.physics.add.overlap(player, door, openDoor, null, this);
     this.physics.add.overlap(player, key, getKey, null, this);
@@ -170,7 +165,7 @@ function update() {
         player.anims.play('idle', true);
     }
     //jumping
-    if (cursors.up.isDown && player.body.touching.down) {
+    if (cursors.up.isDown && player.body.blocked.down) {
         player.setVelocityY(-450);
     }
 
@@ -195,26 +190,15 @@ function collectCoin(player, coin) {
         coins.children.iterate(function(child) {
             child.enableBody(true, child.x, 0, true, true);
         });
-        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.FloatBetween(0, 400);
-        var bomb = bombs.create(x, 16, 'bomb');
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
     }
 }
 
-function hitBomb(player, bomb) {
-    this.physics.pause();
-    player.anims.play('die');
-    this.gameOver = true;
-}
-
 function openDoor(player, door) {
-    if (hasKey == true && player.body.touching.down) {
+    if (hasKey == true && player.body.blocked.down) {
+        door.setFrame(1)
         player.anims.play('die');
         level += 1;
-        createLevel(level);
-        console.log('touched')
+        createLevel(level, this);
     }
 }
 
@@ -224,15 +208,20 @@ function getKey(player, key) {
 
 }
 
-function createLevel(currentlevel) {
+function createLevel(currentlevel, game) {
     platforms.clear(true, true);
     switch (currentlevel) {
         case 0:
+            //House & door
+            house = game.physics.add.image(200, 520, 'house');
+            house.body.allowGravity = false;
+            door = game.physics.add.image(330, 600, 'door');
+            door.setScale(0.9);
+            door.body.allowGravity = false;
+            welcomeText = game.add.text(0, 50, welcome, { fontFamily: 'Munro', fontSize: '40px', color: '#ccffff', backgroundColor: '#5E6664', fixedWidth: 3000, padding: 20 })
+            game.physics.add.image()
             platforms.create(480, 680, 'ground');
             platforms.create(1446, 680, 'ground');
-            platforms.create(85, 350, 'platform');
-            platforms.create(197, 350, 'platform');
-            platforms.create(500, 200, 'platform');
             break;
         case 1:
             platforms.create(480, 680, 'ground');
