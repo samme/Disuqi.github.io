@@ -3,32 +3,47 @@ import { CTS } from "../CTS.js";
 export class GameScene extends Phaser.Scene {
 
     //fields
-    score = 0;
-    scoreText = null;
-    hasKey = false;
-    level = 0;
-    door = null;
-    cursors = null;
-    player = null;
-    coins = null;
-    platforms = null;
+    score;
+    scoreText;
+    key;
+    hasKey;
+    level;
+    cursors;
+    player;
+    coins;
+    platforms;
+    house;
+    controlsON;
     //Text
-    welcome = 'Welcome to my Website!\nMy name is Disuqi Hijazi, I am a university student.\n' +
-        'I go to Salford University and I am studying computer science\n' +
-        'This webstie is all about me, my projects, education, work experience\n' +
-        'but you have to play the game to see all the information!\n' +
-        'I Hope you\'ll like it!';
-    aboutMe = 'I am a hardworking, reliable, and responsible individual who is confident and enjoys taking on challenges\n' +
-        'and actively working on any criticism I may receive.\n' +
-        'Ambitious and diligent in all my work to ensure any given tasks are completed in the best quality manner.\n' +
-        'I am capable and happy to work independently or unsupervised. Moreover, I am friendly and compassionate\n' +
-        'which enables me to remain level-headed and interact with customers to ensure the best experience is provided.\n' +
-        'I am currently a student at Salford University, studying computer science and looking for an internship or part-time job in the Technological industry.';
+    welcome;
+    aboutMe;
 
     constructor() {
         super({
             key: CTS.SCENES.GAME
         })
+        this.key = null;
+        this.score = 0;
+        this.scoreText = null;
+        this.hasKey = false;
+        this.level = 0;
+        this.cursors = null;
+        this.player = null;
+        this.coins = null;
+        this.platforms = null;
+        this.house = null;
+        this.controlsOFF = false;
+        this.welcome = 'Welcome to my Website!\nMy name is Disuqi Hijazi, I am a university student.\n' +
+            'I go to Salford University and I am studying computer science\n' +
+            'This webstie is all about me, my projects, education, work experience\n' +
+            'but you have to play the game to see all the information!\n' +
+            'I Hope you\'ll like it!';
+        this.aboutMe = 'I am a hardworking, reliable, and responsible individual who is confident and enjoys taking on challenges\n' +
+            'and actively working on any criticism I may receive.\n' +
+            'Ambitious and diligent in all my work to ensure any given tasks are completed in the best quality manner.\n' +
+            'I am capable and happy to work independently or unsupervised. Moreover, I am friendly and compassionate\n' +
+            'which enables me to remain level-headed and interact with customers to ensure the best experience is provided.\n' +
+            'I am currently a student at Salford University, studying computer science and looking for an internship or part-time job in the Technological industry.';
     }
 
     create() {
@@ -36,11 +51,11 @@ export class GameScene extends Phaser.Scene {
         this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(0.67);
 
         //key
-        let key = this.physics.add.image(800, 590, 'key');
-        key.setScale(0.05);
-        key.body.allowGravity = false;
+        this.key = this.physics.add.image(800, 590, 'key');
+        this.key.setScale(0.05);
+        this.key.body.allowGravity = false;
         this.tweens.add({
-            targets: key,
+            targets: this.key,
             y: '+=10',
             ease: 'Linear',
             duration: 800,
@@ -66,11 +81,8 @@ export class GameScene extends Phaser.Scene {
         //  score
         this.scoreText = this.add.text(16, 16, 'Score:0', { fontSize: '32px', fill: '#ccffff', fontFamily: 'Arcade Interlaced' });
 
-        // Text group
-
         //players
         this.player = this.physics.add.sprite(100, 450, 'player').setScale(2);
-
         this.player.setCollideWorldBounds(true);
 
         //All animations
@@ -107,8 +119,8 @@ export class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.platforms);
         this.physics.add.collider(this.coins, this.platforms);
         this.physics.add.overlap(this.player, this.coins, this.collectCoin, null, this);
-        this.physics.add.overlap(this.player, this.door, this.openDoor, null, this);
-        this.physics.add.overlap(this.player, key, this.getKey, null, this);
+        this.physics.add.overlap(this.player, this.house, this.openDoor, null, this);
+        this.physics.add.overlap(this.player, this.key, this.getKey, null, this);
 
         //keyboard controls
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -116,7 +128,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     update() {
-        if (this.gameOver) {
+        if (this.gameOver || this.controlsOFF) {
             return;
         }
         //left, right and idle
@@ -162,8 +174,21 @@ export class GameScene extends Phaser.Scene {
 
     openDoor(player, door) {
         if (this.hasKey == true && this.player.body.blocked.down) {
-            door.setFrame(1)
-            this.player.anims.play('die');
+            this.house.setFrame(1)
+            this.controlsOFF = true;
+            if (this.player.x > 925) {
+                this.player.resetFlip();
+                this.player.toggleFlipX();
+            }
+            this.player.anims.play('run', true);
+            this.tweens.add({
+                targets: this.player,
+                x: 925,
+                duration: Math.abs(this.player.x - 925 + 1000),
+                ease: 'Linear',
+            }).on('complete', () => {
+                this.player.anims.play('idle', true);
+            });
             this.level += 1;
             this.createLevel(this);
         }
@@ -180,11 +205,8 @@ export class GameScene extends Phaser.Scene {
         switch (this.level) {
             case 0:
                 //House & door
-                let house = game.physics.add.image(200, 520, 'house');
-                house.body.allowGravity = false;
-                this.door = game.physics.add.image(330, 600, 'door');
-                this.door.setScale(0.9);
-                this.door.body.allowGravity = false;
+                this.house = game.physics.add.image(1050, 520, 'house');
+                this.house.body.allowGravity = false;
                 const welcomeText = game.add.text(0, 50, this.welcome, { fontFamily: 'Munro', fontSize: '40px', color: '#ccffff', backgroundColor: '#5E6664', fixedWidth: 3000, padding: 20 })
                 game.physics.add.image()
                 this.platforms.create(480, 680, 'ground');
