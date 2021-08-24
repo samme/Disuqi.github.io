@@ -1,18 +1,22 @@
+import { LoadScene } from "./scenes/LoadScene.js";
+import { MenuScene } from "./scenes/MenuScene.js";
+import { GameScene } from "./scenes/GameScene.js";
+
 const config = {
     type: Phaser.AUTO,
     width: 1280,
     height: 720,
+    scene: [
+        LoadScene,
+        MenuScene,
+        GameScene,
+    ],
     physics: {
         default: 'arcade',
         arcade: {
             gravity: { y: 500 },
             debug: false,
         }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
     },
     parent: game,
     render: {
@@ -28,7 +32,7 @@ const config = {
 };
 
 var game = new Phaser.Game(config);
-
+/*
 //fields
 let score = 0;
 let scoreText;
@@ -49,15 +53,7 @@ const aboutMe = 'I am a hardworking, reliable, and responsible individual who is
     'I am currently a student at Salford University, studying computer science and looking for an internship or part-time job in the Technological industry.';
 
 function preload() {
-    this.load.image('background', 'images/background.jpg');
-    this.load.image('ground', 'images/ground.png');
-    this.load.image('platform', 'images/grass_4x1.png');
-    this.load.image('coin', 'images/coin.png');
-    this.load.image('bomb', 'images/bomb.png');
-    this.load.image('key', 'images/key.png');
-    this.load.image('house', 'images/house.png')
-    this.load.spritesheet('door', 'images/door.png', { frameWidth: 70, frameHeight: 93 })
-    this.load.spritesheet('player', 'images/FinnSprite.png', { frameWidth: 15, frameHeight: 20, margin: 6, spacing: 17 });
+
 }
 
 function create() {
@@ -68,7 +64,7 @@ function create() {
     key = this.physics.add.image(800, 590, 'key');
     key.setScale(0.05);
     key.body.allowGravity = false;
-    var tween = this.tweens.add({
+    this.tweens.add({
         targets: key,
         y: '+=10',
         ease: 'Linear',
@@ -238,6 +234,6 @@ function createLevel(currentlevel, game) {
             platforms.create(197, 350, 'platform');
             platforms.create(500, 200, 'platform');
             break;
-
     }
 }
+*/
