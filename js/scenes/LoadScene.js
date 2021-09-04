@@ -16,6 +16,14 @@ export class LoadScene extends Phaser.Scene {
         this.load.image('levelButton', 'images/menu/levelButton.png');
         this.load.image('contactMe', 'images/menu/contactMe.png');
         this.load.image('menuBg', 'images/menu/chipBackground.jpg');
+        this.load.image('upNotPressed', 'images/arrowButtons/upNotPressed.png')
+        this.load.image('downNotPressed', 'images/arrowButtons/downNotPressed.png')
+        this.load.image('leftNotPressed', 'images/arrowButtons/leftNotPressed.png')
+        this.load.image('rightNotPressed', 'images/arrowButtons/rightNotPressed.png')
+        this.load.image('upPressed', 'images/arrowButtons/upPressed.png')
+        this.load.image('downPressed', 'images/arrowButtons/downPressed.png')
+        this.load.image('leftPressed', 'images/arrowButtons/leftPressed.png')
+        this.load.image('rightPressed', 'images/arrowButtons/rightPressed.png')
         this.load.spritesheet('door', 'images/level1/door.png', { frameWidth: 70, frameHeight: 93 });
         this.load.spritesheet('player', 'images/FinnSprite.png', { frameWidth: 15, frameHeight: 20, margin: 6, spacing: 17 });
         this.load.spritesheet('house', 'images/level1/houseSS.png', { frameWidth: 405, frameHeight: 239 });

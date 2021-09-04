@@ -50,8 +50,18 @@ export class GameScene extends Phaser.Scene {
         //background
         this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(0.67);
 
+        //arrowKeys
+        this.arrowKeys = this.physics.add.staticGroup();
+        this.up = this.arrowKeys.create(200, 200, 'upNotPressed');
+        this.left = this.arrowKeys.create(140, 260, 'leftNotPressed');
+        this.down = this.arrowKeys.create(200, 260, 'downNotPressed');
+        this.right = this.arrowKeys.create(260, 260, 'rightNotPressed');
+        const listOfArrows = [this.up, this.down, this.left, this.right]
+        listOfArrows.forEach(arrow => arrow.setScale(4));
+
         //key
-        this.key = this.physics.add.image(800, 590, 'key');
+        this.key = this.physics.add.image(1170, 400, 'key');
+        this.key.setDepth(1);
         this.key.setScale(0.05);
         this.key.body.allowGravity = false;
         this.tweens.add({
@@ -142,7 +152,6 @@ export class GameScene extends Phaser.Scene {
             this.player.resetFlip();
         } else {
             this.player.setVelocityX(0);
-
             this.player.anims.play('idle', true);
         }
         //jumping
@@ -153,6 +162,28 @@ export class GameScene extends Phaser.Scene {
         //jump and fall animations
         if (this.player.body.velocity.y != 0) {
             this.player.anims.play('jump');
+        }
+
+        //arrowKeys image
+        if (this.cursors.up.isDown) {
+            this.up.setTexture('upPressed');
+        } else {
+            this.up.setTexture('upNotPressed');
+        }
+        if (this.cursors.down.isDown) {
+            this.down.setTexture('downPressed');
+        } else {
+            this.down.setTexture('downNotPressed');
+        }
+        if (this.cursors.left.isDown) {
+            this.left.setTexture('leftPressed')
+        } else {
+            this.left.setTexture('leftNotPressed');
+        }
+        if (this.cursors.right.isDown) {
+            this.right.setTexture('rightPressed');
+        } else {
+            this.right.setTexture('rightNotPressed');
         }
     }
     run(direction) {
@@ -191,6 +222,8 @@ export class GameScene extends Phaser.Scene {
             });
             this.level += 1;
             this.createLevel(this);
+        } else {
+            console.log('touched')
         }
     }
 
@@ -207,7 +240,14 @@ export class GameScene extends Phaser.Scene {
                 //House & door
                 this.house = game.physics.add.image(1050, 520, 'house');
                 this.house.body.allowGravity = false;
-                const welcomeText = game.add.text(0, 50, this.welcome, { fontFamily: 'Munro', fontSize: '40px', color: '#ccffff', backgroundColor: '#5E6664', fixedWidth: 3000, padding: 20 })
+                this.house.body.setSize(50, 80, false);
+                var rect = this.add.graphics({
+                    fillStyle: {
+                        color: 0xffffff
+                    }
+                });
+                this.house.body.drawDebug(rect);
+                //const welcomeText = game.add.text(0, 50, this.welcome, { fontFamily: 'Munro', fontSize: '40px', color: '#ccffff', backgroundColor: '#5E6664', fixedWidth: 3000, padding: 20 })
                 game.physics.add.image()
                 this.platforms.create(480, 680, 'ground');
                 this.platforms.create(1446, 680, 'ground');

@@ -13,17 +13,23 @@ export class MenuScene extends Phaser.Scene {
         let startButton = this.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2 - 50, 'startButton');
         let levelButton = this.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2 + 50, 'levelButton');
         let contactMe = this.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2 + 150, 'contactMe');
-
-        startButton.setInteractive();
-        startButton.on('pointerover', () => {
-            startButton.setScale(1.1);
-        })
-        startButton.on('pointerout', () => {
-            startButton.setScale(1);
-        })
-        startButton.on('pointerup', () => {
-            this.scene.start(CTS.SCENES.GAME);
-        })
+        const buttons = [startButton, levelButton, contactMe]
+        const buttonMap = new Map()
+        buttonMap.set(startButton, CTS.SCENES.GAME)
+        buttonMap.set(levelButton, CTS.SCENES.GAME)
+        buttonMap.set(contactMe, CTS.SCENES.GAME)
+        buttons.forEach(button => {
+            button.setInteractive();
+            button.on('pointerover', () => {
+                button.setScale(1.1);
+            })
+            button.on('pointerout', () => {
+                button.setScale(1);
+            })
+            button.on('pointerup', () => {
+                this.scene.start(buttonMap.get(button));
+            })
+        });
     }
 
 }
