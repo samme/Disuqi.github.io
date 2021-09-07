@@ -4,16 +4,9 @@ export class GameScene extends Phaser.Scene {
 
     //fields
     score;
-    scoreText;
-    key;
     hasKey;
     level;
-    cursors;
-    player;
-    coins;
-    platforms;
-    house;
-    controlsON;
+    controlsOFF;
     //Text
     welcome;
     aboutMe;
@@ -22,16 +15,9 @@ export class GameScene extends Phaser.Scene {
         super({
             key: CTS.SCENES.GAME
         })
-        this.key = null;
         this.score = 0;
-        this.scoreText = null;
         this.hasKey = false;
         this.level = 0;
-        this.cursors = null;
-        this.player = null;
-        this.coins = null;
-        this.platforms = null;
-        this.house = null;
         this.controlsOFF = false;
         this.welcome = 'Welcome to my Website!\nMy name is Disuqi Hijazi, I am a university student.\n' +
             'I go to Salford University and I am studying computer science\n' +
@@ -131,6 +117,7 @@ export class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.coins, this.collectCoin, null, this);
         this.physics.add.overlap(this.player, this.house, this.openDoor, null, this);
         this.physics.add.overlap(this.player, this.key, this.getKey, null, this);
+        this.physics.add.overlap(this.player, this.ladder, this.climbLadder, null, this);
 
         //keyboard controls
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -233,6 +220,12 @@ export class GameScene extends Phaser.Scene {
 
     }
 
+    climbLadder(player, ladder) {
+        if (this.cursors.up.isDown) {
+            this.player.y -= 1;
+        }
+    }
+
     createLevel(game) {
         this.platforms.clear(true, true);
         switch (this.level) {
@@ -240,7 +233,10 @@ export class GameScene extends Phaser.Scene {
                 //House & door
                 this.house = game.physics.add.image(1050, 520, 'house');
                 this.house.body.allowGravity = false;
-                this.house.body.setSize(50, 80, false);
+                this.house.body.setSize(50, 80, true);
+                this.ladder = game.physics.add.image(1060, 570, 'ladder');
+                this.ladder.body.allowGravity = false;
+                this.ladder.setScale(0.5);
                 var rect = this.add.graphics({
                     fillStyle: {
                         color: 0xffffff
