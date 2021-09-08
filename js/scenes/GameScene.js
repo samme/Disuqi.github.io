@@ -78,7 +78,7 @@ export class GameScene extends Phaser.Scene {
         this.scoreText = this.add.text(16, 16, 'Score:0', { fontSize: '32px', fill: '#ccffff', fontFamily: 'Arcade Interlaced' });
 
         //player
-        this.player = this.physics.add.sprite(100, 450, 'player').setScale(2);
+        this.player = this.physics.add.sprite(10, 620, 'player').setScale(2);
         this.player.setCollideWorldBounds(true);
 
         //All animations
@@ -110,6 +110,12 @@ export class GameScene extends Phaser.Scene {
             frameRate: 6,
         });
 
+        this.anims.create({
+            key: 'computerOn',
+            frames: this.anims.generateFrameNumbers('computer', { start: 0, end: 5 }),
+            frameRate: 6,
+        });
+
 
         //collissions and overlaps
         this.physics.add.collider(this.player, this.platforms);
@@ -118,6 +124,7 @@ export class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.house, this.openDoor, null, this);
         this.physics.add.overlap(this.player, this.key, this.getKey, null, this);
         this.physics.add.overlap(this.player, this.ladder, this.climbLadder, null, this);
+        this.physics.add.overlap(this.player, this.computer, this.turnOnComputer, null, this);
 
         //keyboard controls
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -257,6 +264,12 @@ export class GameScene extends Phaser.Scene {
         }
 
     }
+    turnOnComputer(player, computer) {
+        if (!this.computerOn) {
+            computer.anims.play('computerOn');
+            this.computerOn = true;
+        }
+    }
 
     createLevel(game) {
         this.platforms.clear(true, true);
@@ -269,11 +282,18 @@ export class GameScene extends Phaser.Scene {
                 this.ladder = game.physics.add.image(1060, 570, 'ladder');
                 this.ladder.body.allowGravity = false;
                 this.ladder.setScale(0.5);
+                this.computer = game.physics.add.sprite(250, 570, 'computer');
+                this.computer.setScale(0.5);
+                this.computer.toggleFlipX();
+                this.computer.body.allowGravity = false;
+                this.computerOn = false;
+
                 var rect = this.add.graphics({
                     fillStyle: {
                         color: 0xffffff
                     }
                 });
+                //doesnt work properly
                 this.house.body.drawDebug(rect);
                 //const welcomeText = game.add.text(0, 50, this.welcome, { fontFamily: 'Munro', fontSize: '40px', color: '#ccffff', backgroundColor: '#5E6664', fixedWidth: 3000, padding: 20 })
                 game.physics.add.image()
