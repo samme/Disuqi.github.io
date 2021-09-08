@@ -34,19 +34,19 @@ export class GameScene extends Phaser.Scene {
 
     create() {
         //background
-        this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(0.67);
+        this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(4.5);
 
         //arrowKeys
         this.arrowKeys = this.physics.add.staticGroup();
-        this.up = this.arrowKeys.create(200, 200, 'upNotPressed');
-        this.left = this.arrowKeys.create(140, 260, 'leftNotPressed');
-        this.down = this.arrowKeys.create(200, 260, 'downNotPressed');
-        this.right = this.arrowKeys.create(260, 260, 'rightNotPressed');
+        this.up = this.arrowKeys.create(200, 200, 'w');
+        this.left = this.arrowKeys.create(140, 260, 'a');
+        this.down = this.arrowKeys.create(200, 260, 's');
+        this.right = this.arrowKeys.create(260, 260, 'd');
         const listOfArrows = [this.up, this.down, this.left, this.right]
-        listOfArrows.forEach(arrow => arrow.setScale(4));
+        listOfArrows.forEach(arrow => arrow.setScale(0.6));
 
         //key
-        this.key = this.physics.add.image(1170, 400, 'key');
+        this.key = this.physics.add.image(1170, 350, 'key');
         this.key.setDepth(1);
         this.key.setScale(0.05);
         this.key.body.allowGravity = false;
@@ -77,7 +77,7 @@ export class GameScene extends Phaser.Scene {
         //  score
         this.scoreText = this.add.text(16, 16, 'Score:0', { fontSize: '32px', fill: '#ccffff', fontFamily: 'Arcade Interlaced' });
 
-        //players
+        //player
         this.player = this.physics.add.sprite(100, 450, 'player').setScale(2);
         this.player.setCollideWorldBounds(true);
 
@@ -121,6 +121,10 @@ export class GameScene extends Phaser.Scene {
 
         //keyboard controls
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.cursors.a = this.input.keyboard.addKey('A', true, true);
+        this.cursors.s = this.input.keyboard.addKey('S', true, true);
+        this.cursors.d = this.input.keyboard.addKey('D', true, true);
+        this.cursors.w = this.input.keyboard.addKey('W', true, true);
         this.gameOver = false;
     }
 
@@ -128,12 +132,18 @@ export class GameScene extends Phaser.Scene {
         if (this.gameOver || this.controlsOFF) {
             return;
         }
+        if (this.ladder.body.touching.none && !this.ladder.body.wasTouching.none) {
+            this.climbing = false;
+        }
+        if (!this.climbing) {
+            this.player.body.allowGravity = true;
+        }
         //left, right and idle
-        if (this.cursors.left.isDown) {
+        if (this.cursors.left.isDown || this.cursors.a.isDown) {
             this.run(-1);
             this.player.anims.play('run', true);
             this.player.setFlipX(true);
-        } else if (this.cursors.right.isDown) {
+        } else if (this.cursors.right.isDown || this.cursors.d.isDown) {
             this.run(1);
             this.player.anims.play('run', true);
             this.player.resetFlip();
@@ -142,7 +152,7 @@ export class GameScene extends Phaser.Scene {
             this.player.anims.play('idle', true);
         }
         //jumping
-        if (this.cursors.up.isDown && this.player.body.blocked.down) {
+        if ((this.cursors.up.isDown || this.cursors.w.isDown) && this.player.body.blocked.down && !this.climbing) {
             this.player.setVelocityY(-450);
         }
 
@@ -152,25 +162,44 @@ export class GameScene extends Phaser.Scene {
         }
 
         //arrowKeys image
-        if (this.cursors.up.isDown) {
-            this.up.setTexture('upPressed');
+        this.changeKeysImage();
+    }
+    changeKeysImage() {
+        if (this.cursors.up.isDown || this.cursors.w.isDown) {
+            this.up.setTexture('wP');
+            this.up.x = 203;
+            this.up.y = 203;
         } else {
-            this.up.setTexture('upNotPressed');
+            this.up.setTexture('w');
+            this.up.x = 200;
+            this.up.y = 200;
         }
-        if (this.cursors.down.isDown) {
-            this.down.setTexture('downPressed');
+        if (this.cursors.down.isDown || this.cursors.s.isDown) {
+            this.down.setTexture('sP');
+            this.down.x = 203;
+            this.down.y = 263;
         } else {
-            this.down.setTexture('downNotPressed');
+            this.down.setTexture('s');
+            this.down.x = 200;
+            this.down.y = 260;
         }
-        if (this.cursors.left.isDown) {
-            this.left.setTexture('leftPressed')
+        if (this.cursors.left.isDown || this.cursors.a.isDown) {
+            this.left.setTexture('aP')
+            this.left.x = 143;
+            this.left.y = 263;
         } else {
-            this.left.setTexture('leftNotPressed');
+            this.left.setTexture('a');
+            this.left.x = 140;
+            this.left.y = 260;
         }
-        if (this.cursors.right.isDown) {
-            this.right.setTexture('rightPressed');
+        if (this.cursors.right.isDown || this.cursors.d.isDown) {
+            this.right.setTexture('dP');
+            this.right.x = 263;
+            this.right.y = 263;
         } else {
-            this.right.setTexture('rightNotPressed');
+            this.right.setTexture('d');
+            this.right.x = 260;
+            this.right.y = 260;
         }
     }
     run(direction) {
@@ -222,8 +251,11 @@ export class GameScene extends Phaser.Scene {
 
     climbLadder(player, ladder) {
         if (this.cursors.up.isDown) {
-            this.player.y -= 1;
+            this.player.y -= 3;
+            this.player.body.allowGravity = false;
+            this.climbing = true;
         }
+
     }
 
     createLevel(game) {
