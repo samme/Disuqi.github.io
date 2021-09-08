@@ -112,7 +112,7 @@ export class GameScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'computerOn',
-            frames: this.anims.generateFrameNumbers('computer', { start: 0, end: 5 }),
+            frames: this.anims.generateFrameNumbers('computer', { start: 0, end: 10 }),
             frameRate: 6,
         });
 
