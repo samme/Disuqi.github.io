@@ -43,8 +43,9 @@ export class LoadScene extends Phaser.Scene {
         //spritesheets
         this.load.spritesheet('door', 'images/level1/door.png', { frameWidth: 70, frameHeight: 93 });
         this.load.spritesheet('player', 'images/FinnSprite.png', { frameWidth: 15, frameHeight: 20, margin: 6, spacing: 17 });
+        this.load.spritesheet('finn', 'images/FinnSprite2.png', { frameWidth: 15, frameHeight: 20, margin: 6, spacing: 17 });
         this.load.spritesheet('house', 'images/level1/houseSS.png', { frameWidth: 405, frameHeight: 239 });
-        this.load.spritesheet('computer', 'images/level1/computer.png', { frameWidth: 295, frameHeight: 270 });
+        this.load.spritesheet('computer', 'images/level1/computer.png', { frameWidth: 512, frameHeight: 512 });
 
         let loadingBar = this.add.graphics({
             fillStyle: {
@@ -56,6 +57,6 @@ export class LoadScene extends Phaser.Scene {
         })
     }
     create() {
-        this.scene.start(CTS.SCENES.GAME)
+        this.scene.start(CTS.SCENES.MENU)
     }
 }

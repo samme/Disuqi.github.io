@@ -78,38 +78,46 @@ export class GameScene extends Phaser.Scene {
         this.scoreText = this.add.text(16, 16, 'Score:0', { fontSize: '32px', fill: '#ccffff', fontFamily: 'Arcade Interlaced' });
 
         //player
-        this.player = this.physics.add.sprite(10, 620, 'player').setScale(2);
+        this.player = this.physics.add.sprite(10, 620, 'finn').setScale(2);
         this.player.setCollideWorldBounds(true);
 
         //All animations
         //  player animations
         this.anims.create({
             key: 'run',
-            frames: this.anims.generateFrameNumbers('player', { start: 9, end: 14 }),
+            frames: this.anims.generateFrameNumbers('finn', { start: 9, end: 14 }),
             frameRate: 8,
             repeat: -1,
         }, );
         this.anims.create({
             key: 'idle',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 8 }),
+            frames: this.anims.generateFrameNumbers('finn', { start: 0, end: 8 }),
             frameRate: 5,
             repeat: -1,
         });
         this.anims.create({
             key: 'jump',
-            frames: [{ key: 'player', frame: 15 }],
+            frames: [{ key: 'finn', frame: 15 }],
         })
         this.anims.create({
             key: 'die',
-            frames: this.anims.generateFrameNumbers('player', { start: 19, end: 23 }),
+            frames: this.anims.generateFrameNumbers('finn', { start: 19, end: 23 }),
             frameRate: 8,
         })
         this.anims.create({
             key: 'hit',
-            frames: this.anims.generateFrameNumbers('player', { start: 17, end: 18 }),
+            frames: this.anims.generateFrameNumbers('finn', { start: 17, end: 18 }),
             frameRate: 6,
         });
-
+        this.anims.create({
+            key: 'lookBack',
+            frames: [{ key: 'finn', frame: 28 }]
+        })
+        this.anims.create({
+            key: 'climb',
+            frames: this.anims.generateFrameNumbers('finn', { start: 29, end: 30 }),
+            frameRate: 8
+        })
         this.anims.create({
             key: 'computerOn',
             frames: this.anims.generateFrameNumbers('computer', { start: 0, end: 10 }),
@@ -154,6 +162,9 @@ export class GameScene extends Phaser.Scene {
             this.run(1);
             this.player.anims.play('run', true);
             this.player.resetFlip();
+        } else if (this.cursors.down.isDown || this.cursors.s.isDown) {
+            this.player.anims.play('lookBack', true);
+            this.player.setVelocityX(0);
         } else {
             this.player.setVelocityX(0);
             this.player.anims.play('idle', true);
@@ -164,10 +175,12 @@ export class GameScene extends Phaser.Scene {
         }
 
         //jump and fall animations
-        if (this.player.body.velocity.y != 0) {
+        if (this.player.body.velocity.y != 0 && !this.climbing) {
             this.player.anims.play('jump');
         }
-
+        if (this.climbing) {
+            this.player.anims.play('climb', true);
+        }
         //arrowKeys image
         this.changeKeysImage();
     }
@@ -258,6 +271,7 @@ export class GameScene extends Phaser.Scene {
 
     climbLadder(player, ladder) {
         if (this.cursors.up.isDown) {
+            this.player.anims.play('climb', true);
             this.player.y -= 3;
             this.player.body.allowGravity = false;
             this.climbing = true;
@@ -266,7 +280,7 @@ export class GameScene extends Phaser.Scene {
     }
     turnOnComputer(player, computer) {
         if (!this.computerOn) {
-            computer.anims.play('computerOn');
+            computer.anims.play('computerOn', true);
             this.computerOn = true;
         }
     }
@@ -282,7 +296,7 @@ export class GameScene extends Phaser.Scene {
                 this.ladder = game.physics.add.image(1060, 570, 'ladder');
                 this.ladder.body.allowGravity = false;
                 this.ladder.setScale(0.5);
-                this.computer = game.physics.add.sprite(250, 570, 'computer');
+                this.computer = game.physics.add.sprite(250, 550, 'computer');
                 this.computer.setScale(0.5);
                 this.computer.toggleFlipX();
                 this.computer.body.allowGravity = false;
