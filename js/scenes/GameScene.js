@@ -150,6 +150,9 @@ export class GameScene extends Phaser.Scene {
         if (this.ladder.body.touching.none && !this.ladder.body.wasTouching.none) {
             this.climbing = false;
         }
+        if (this.computer.body.touching.none && !this.computer.body.wasTouching.none) {
+            this.readComputerText.visible = false;
+        }
         if (!this.climbing) {
             this.player.body.allowGravity = true;
         }
@@ -258,8 +261,6 @@ export class GameScene extends Phaser.Scene {
             });
             this.level += 1;
             this.createLevel(this);
-        } else {
-            console.log('touched')
         }
     }
 
@@ -281,9 +282,15 @@ export class GameScene extends Phaser.Scene {
     turnOnComputer(player, computer) {
         if (!this.computerOn) {
             computer.anims.play('computerOn', true);
+            computer.on('animationcomplete', () => {
+                this.readComputerText = this.add.text(105, 400, 'Press S or ↓ to read', { fontSize: '24px', fill: '#41FF00', backgroundColor: '#3b4566', padding: 10, fontFamily: 'Cascadia Code' });
+            })
             this.computerOn = true;
+        } else if (this.readComputerText != null) {
+            this.readComputerText.visible = true;
         }
     }
+
 
     createLevel(game) {
         this.platforms.clear(true, true);
@@ -307,8 +314,6 @@ export class GameScene extends Phaser.Scene {
                         color: 0xffffff
                     }
                 });
-                //doesnt work properly
-                this.house.body.drawDebug(rect);
                 //const welcomeText = game.add.text(0, 50, this.welcome, { fontFamily: 'Munro', fontSize: '40px', color: '#ccffff', backgroundColor: '#5E6664', fixedWidth: 3000, padding: 20 })
                 game.physics.add.image()
                 this.platforms.create(480, 680, 'ground');
