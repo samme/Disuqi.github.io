@@ -40,12 +40,14 @@ export class LoadScene extends Phaser.Scene {
         this.load.image('leftPressed', 'images/arrowButtons/leftPressed.png');
         this.load.image('rightPressed', 'images/arrowButtons/rightPressed.png');
 
+        //computer
+        this.load.image('monitor', 'images/level1/monitor.png');
+        this.load.spritesheet('computer', 'images/level1/computer.png', { frameWidth: 512, frameHeight: 512 });
         //spritesheets
         this.load.spritesheet('door', 'images/level1/door.png', { frameWidth: 70, frameHeight: 93 });
         this.load.spritesheet('player', 'images/FinnSprite.png', { frameWidth: 15, frameHeight: 20, margin: 6, spacing: 17 });
         this.load.spritesheet('finn', 'images/FinnSprite.png', { frameWidth: 15, frameHeight: 20, margin: 6, spacing: 17 });
         this.load.spritesheet('house', 'images/level1/houseSS.png', { frameWidth: 405, frameHeight: 239 });
-        this.load.spritesheet('computer', 'images/level1/computer.png', { frameWidth: 512, frameHeight: 512 });
 
         let loadingBar = this.add.graphics({
             fillStyle: {

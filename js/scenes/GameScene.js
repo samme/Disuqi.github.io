@@ -150,7 +150,7 @@ export class GameScene extends Phaser.Scene {
         if (this.ladder.body.touching.none && !this.ladder.body.wasTouching.none) {
             this.climbing = false;
         }
-        if (this.computer.body.touching.none && !this.computer.body.wasTouching.none) {
+        if (this.computer.body.touching.none && !this.computer.body.wasTouching.none && this.readComputerText != null) {
             this.readComputerText.visible = false;
         }
         if (!this.climbing) {
@@ -288,6 +288,27 @@ export class GameScene extends Phaser.Scene {
             this.computerOn = true;
         } else if (this.readComputerText != null) {
             this.readComputerText.visible = true;
+            if (this.cursors.down.isDown || this.cursors.s.isDown) {
+                this.readComputer();
+            }
+        }
+    }
+
+    readComputer() {
+        if (!this.lookingAtMonitor) {
+            if (this.monitor == null) {
+                this.monitor = this.physics.add.image(0, 0, 'monitor');
+                this.monitor.setScale(0.67);
+                this.monitor.setOrigin(0, 0);
+                this.monitor.setDepth(2);
+                this.monitor.body.allowGravity = false;
+            } else {
+                this.monitor.visible = true;
+            }
+            this.lookingAtMonitor = true;
+        } else {
+            this.monitor.visible = false;
+            this.lookingAtMonitor = false;
         }
     }
 
@@ -297,25 +318,19 @@ export class GameScene extends Phaser.Scene {
         switch (this.level) {
             case 0:
                 //House & door
-                this.house = game.physics.add.image(1050, 520, 'house');
+                this.house = this.physics.add.image(1050, 520, 'house');
                 this.house.body.allowGravity = false;
                 this.house.body.setSize(50, 80, true);
-                this.ladder = game.physics.add.image(1060, 570, 'ladder');
+                this.ladder = this.physics.add.image(1060, 570, 'ladder');
                 this.ladder.body.allowGravity = false;
                 this.ladder.setScale(0.5);
-                this.computer = game.physics.add.sprite(250, 550, 'computer');
+                this.computer = this.physics.add.sprite(250, 550, 'computer');
                 this.computer.setScale(0.5);
                 this.computer.toggleFlipX();
                 this.computer.body.allowGravity = false;
                 this.computerOn = false;
-
-                var rect = this.add.graphics({
-                    fillStyle: {
-                        color: 0xffffff
-                    }
-                });
                 //const welcomeText = game.add.text(0, 50, this.welcome, { fontFamily: 'Munro', fontSize: '40px', color: '#ccffff', backgroundColor: '#5E6664', fixedWidth: 3000, padding: 20 })
-                game.physics.add.image()
+                this.physics.add.image()
                 this.platforms.create(480, 680, 'ground');
                 this.platforms.create(1446, 680, 'ground');
                 break;
