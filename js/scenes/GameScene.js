@@ -61,9 +61,6 @@ export class GameScene extends Phaser.Scene {
         if (this.computer.body.touching.none && !this.computer.body.wasTouching.none && this.readComputerText != null) {
             this.readComputerText.visible = false;
         }
-        if (!this.climbing) {
-            this.player.body.allowGravity = true;
-        }
         //movement left right and jump
         this.movePlayer();
         //arrowKeys image
@@ -71,6 +68,9 @@ export class GameScene extends Phaser.Scene {
     }
     movePlayer() {
         //left, right and idle
+        if (this.climbing) {
+            return;
+        }
         if (this.cursors.left.isDown || this.cursors.a.isDown) {
             this.run(-1);
             this.player.anims.play('run', true);
@@ -79,10 +79,10 @@ export class GameScene extends Phaser.Scene {
             this.run(1);
             this.player.anims.play('run', true);
             this.player.resetFlip();
-        } else if ((this.cursors.down.isDown || this.cursors.s.isDown) && !this.climbing) {
+        } else if ((this.cursors.down.isDown || this.cursors.s.isDown)) {
             this.player.anims.play('lookBack', true);
             this.player.setVelocityX(0);
-        } else if (!this.climbing) {
+        } else {
             this.player.setVelocityX(0);
             this.player.anims.play('idle', true);
         }
@@ -154,18 +154,29 @@ export class GameScene extends Phaser.Scene {
     }
 
     climbLadder(player, ladder) {
-        if (this.cursors.up.isDown) {
-            this.player.anims.play('climb', true);
-            this.player.setVelocityY(-200);
+        if (this.cursors.up.isDown && this.player.body.blocked.down && !this.climbing) {
+            this.player.y -= 10;
+            this.player.x = this.ladder.x;
             this.climbing = true;
-        } else if (this.cursors.down.isDown && this.climbing) {
-            this.player.anims.play('climb', true);
-            this.player.setVelocityY(200);
-        } else if (this.climbing) {
+        } else if (this.player.body.blocked.down) {
+            this.climbing = false;
+        }
+        if (!this.climbing) {
+            return;
+        }
+        if (this.cursors.up.isDown) {
+            this.climb(-1);
+        } else if (this.cursors.down.isDown) {
+            this.climb(1);
+        } else {
             this.player.anims.stop();
             this.player.setVelocityY(0);
         }
 
+    }
+    climb(direction) {
+        this.player.anims.play('climb', true);
+        this.player.setVelocityY(150 * direction);
     }
     turnOnComputer(player, computer) {
         if (!this.computerOn) {
@@ -213,7 +224,7 @@ export class GameScene extends Phaser.Scene {
                 this.house.body.setSize(50, 80, true);
                 this.house.body.setOffset(0, 200);
                 //Ladder
-                this.ladder = this.physics.add.image(1060, 570, 'ladder');
+                this.ladder = this.physics.add.image(1140, 526, 'ladder');
                 this.ladder.body.allowGravity = false;
                 this.ladder.setScale(0.5);
                 //Computer
