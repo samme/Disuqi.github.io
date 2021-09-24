@@ -58,7 +58,7 @@ export class GameScene extends Phaser.Scene {
         if (this.ladder.body.touching.none && !this.ladder.body.wasTouching.none) {
             this.climbing = false;
         }
-        if (this.computer.body.touching.none && !this.computer.body.wasTouching.none && this.readComputerText != null) {
+        if (this.computer.body.touching.none && this.readComputerText != null) {
             this.readComputerText.visible = false;
         }
         //movement left right and jump
@@ -178,6 +178,7 @@ export class GameScene extends Phaser.Scene {
         this.player.anims.play('climb', true);
         this.player.setVelocityY(150 * direction);
     }
+
     turnOnComputer(player, computer) {
         if (!this.computerOn) {
             computer.anims.play('computerOn', true);
@@ -224,9 +225,10 @@ export class GameScene extends Phaser.Scene {
                 this.house.body.setSize(50, 80, true);
                 this.house.body.setOffset(0, 200);
                 //Ladder
-                this.ladder = this.physics.add.image(1140, 526, 'ladder');
+                this.ladder = this.physics.add.image(1070, 577, 'ladder');
                 this.ladder.body.allowGravity = false;
                 this.ladder.setScale(0.5);
+                this.ladder.setImmovable(true);
                 //Computer
                 this.computer = this.physics.add.sprite(250, 550, 'computer');
                 this.computer.setScale(0.5);
@@ -325,8 +327,18 @@ export class GameScene extends Phaser.Scene {
             frameRate: 5,
         });
     }
+
+    checkPlayerY() {
+        if (this.player.y > this.ladder.y) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     createColliders() {
         this.physics.add.collider(this.player, this.platforms);
+        this.physics.add.collider(this.player, this.ladder, null, this.checkPlayerY, this);
         this.physics.add.overlap(this.player, this.house, this.openDoor, null, this);
         this.physics.add.overlap(this.player, this.key, this.getKey, null, this);
         this.physics.add.overlap(this.player, this.ladder, this.climbLadder, null, this);
