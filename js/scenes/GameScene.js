@@ -79,9 +79,6 @@ export class GameScene extends Phaser.Scene {
             this.run(1);
             this.player.anims.play('run', true);
             this.player.resetFlip();
-        } else if ((this.cursors.down.isDown || this.cursors.s.isDown)) {
-            this.player.anims.play('lookBack', true);
-            this.player.setVelocityX(0);
         } else {
             this.player.setVelocityX(0);
             this.player.anims.play('idle', true);
@@ -155,7 +152,7 @@ export class GameScene extends Phaser.Scene {
 
     climbLadder(player, ladder) {
         if (this.cursors.up.isDown && this.player.body.blocked.down && !this.climbing) {
-            this.player.y -= 10;
+            this.player.y -= 5;
             this.player.x = this.ladder.x;
             this.climbing = true;
         } else if (this.player.body.blocked.down) {
@@ -223,11 +220,11 @@ export class GameScene extends Phaser.Scene {
                 this.house = this.physics.add.image(1050, 520, 'house');
                 this.house.body.allowGravity = false;
                 this.house.body.setSize(50, 80, true);
-                this.house.body.setOffset(0, 200);
+                this.house.body.setOffset(52, 157);
                 //Ladder
-                this.ladder = this.physics.add.image(1070, 577, 'ladder');
+                this.ladder = this.physics.add.image(875, 577, 'ladder');
                 this.ladder.body.allowGravity = false;
-                this.ladder.setScale(0.5);
+                this.ladder.setScale(0.45, 0.5);
                 this.ladder.setImmovable(true);
                 //Computer
                 this.computer = this.physics.add.sprite(250, 550, 'computer');
@@ -329,7 +326,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     checkPlayerY() {
-        if (this.player.y > this.ladder.y) {
+        if (this.player.y > this.ladder.y - 50 && !this.climbing) {
             return false;
         } else {
             return true;
