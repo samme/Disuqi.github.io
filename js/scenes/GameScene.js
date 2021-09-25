@@ -68,7 +68,7 @@ export class GameScene extends Phaser.Scene {
     }
     movePlayer() {
         //left, right and idle
-        if (this.climbing) {
+        if (this.climbing || this.inAnimation) {
             return;
         }
         if (this.cursors.left.isDown || this.cursors.a.isDown) {
@@ -138,7 +138,6 @@ export class GameScene extends Phaser.Scene {
     openDoor(player, door) {
         if (this.hasKey == true && this.player.body.blocked.down) {
             this.house.setFrame(1)
-            this.controlsOFF = true;
             this.level += 1;
             this.createLevel(this);
         }
@@ -193,19 +192,59 @@ export class GameScene extends Phaser.Scene {
 
     readComputer() {
         if (!this.lookingAtMonitor) {
-            if (this.monitor == null) {
-                this.monitor = this.physics.add.image(0, 0, 'monitor');
-                this.monitor.setScale(0.67);
-                this.monitor.setOrigin(0, 0);
-                this.monitor.setDepth(2);
-                this.monitor.body.allowGravity = false;
-            } else {
-                this.monitor.visible = true;
+            this.inAnimation = true;
+            this.player.resetFlip();
+            if (this.player.x > 207) {
+                this.player.toggleFlipX();
             }
-            this.lookingAtMonitor = true;
+            this.player.anims.play('run', true);
+
+            this.tweens.add({
+                targets: this.player,
+                x: 207,
+                duration: Math.abs(this.player.x - 207) * 8,
+                ease: 'Linear',
+            }).on('complete', () => {
+                this.player.resetFlip();
+                this.player.anims.play('lookBack', true);
+                if (this.monitor == null) {
+                    this.monitor = this.physics.add.image(0, 0, 'monitor');
+                    this.monitor.setScale(0.67);
+                    this.monitor.setOrigin(0, 0);
+                    this.monitor.setDepth(2);
+                    this.monitor.body.allowGravity = false;
+                } else {
+                    this.monitor.visible = true;
+                }
+                this.lookingAtMonitor = true;
+            });
+
+            // if (this.player.x > 925) {
+            //     this.player.resetFlip();
+            //     this.player.toggleFlipX();
+            // }
+            // this.player.anims.play('run', true);
+            // this.tweens.add({
+            //     targets: this.player,
+            //     x: 925,
+            //     duration: Math.abs(this.player.x - 925 + 1000),
+            //     ease: 'Linear',
+            // }).on('complete', () => {
+            //     this.player.anims.play('idle', true);
+            // });
+            //     if (this.monitor == null) {
+            //         this.monitor = this.physics.add.image(0, 0, 'monitor');
+            //         this.monitor.setScale(0.67);
+            //         this.monitor.setOrigin(0, 0);
+            //         this.monitor.setDepth(2);
+            //         this.monitor.body.allowGravity = false;
+            //     } else {
+            //         this.monitor.visible = true;
+            //     }
+            //     this.lookingAtMonitor = true;
         } else {
             this.monitor.visible = false;
-            this.lookingAtMonitor = false;
+            this.inAnimation = false;
         }
     }
 
