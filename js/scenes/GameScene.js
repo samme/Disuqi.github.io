@@ -3,7 +3,6 @@ import { CTS } from "../CTS.js";
 export class GameScene extends Phaser.Scene {
 
     //fields
-    score;
     hasKey;
     level;
     controlsOFF;
@@ -15,8 +14,7 @@ export class GameScene extends Phaser.Scene {
     constructor() {
         super({
             key: CTS.SCENES.GAME
-        })
-        this.score = 0;
+        });
         this.hasKey = false;
         this.level = 0;
         this.controlsOFF = false;
@@ -40,15 +38,15 @@ export class GameScene extends Phaser.Scene {
         this.createLevel(this);
         //arrowKeys
         this.createArrowKeys()
-            //score
-            // this.scoreText = this.add.text(16, 16, 'Score:0', { fontSize: '32px', fill: '#ccffff', fontFamily: 'Arcade Interlaced' });
-            //player
+
+        //player
         this.player = this.physics.add.sprite(600, 620, 'finn').setScale(2);
-        this.player.setCollideWorldBounds(true);
         //animations
         this.createAnimations();
         //collissions and overlaps
-        this.createColliders()
+        this.createColliders();
+        //tweens
+        this.createTweens();
     }
 
     update() {
@@ -175,77 +173,68 @@ export class GameScene extends Phaser.Scene {
         this.player.setVelocityY(150 * direction);
     }
 
-    turnOnComputer(player, computer) {
-        if (!this.computerOn) {
-            computer.anims.play('computerOn', true);
-            computer.on('animationcomplete', () => {
-                this.readComputerText = this.add.text(105, 400, 'Press S or ↓ to read', { fontSize: '24px', fill: '#41FF00', backgroundColor: '#3b4566', padding: 10, fontFamily: 'Cascadia Code' });
-            })
-            this.computerOn = true;
-        } else if (this.readComputerText != null) {
+
+    //Functions for the computer
+    onComputer(player, computer) {
+        //Handling text to help the player
+        if (this.readComputerText == null) {
+            this.readComputerText = this.add.text(this.computer.x, this.computer.y - 130, 'Press S or ↓ to turn ON', { fontSize: '24px', fill: '#41FF00', backgroundColor: '#3b4566', padding: 10, fontFamily: 'Cascadia Code' }).setOrigin(0.5, 0.5);
+        } else if (this.inAnimation != true) {
             this.readComputerText.visible = true;
-            if (this.cursors.down.isDown || this.cursors.s.isDown) {
-                this.readComputer();
-            }
+        }
+
+        //Turning on the computer
+        if (this.cursors.s.isDown || this.cursors.down.isDown) {
+            this.readComputer();
         }
     }
 
     readComputer() {
-        if (!this.lookingAtMonitor) {
-            this.inAnimation = true;
-            this.player.resetFlip();
-            if (this.player.x > 207) {
-                this.player.toggleFlipX();
-            }
-            this.player.anims.play('run', true);
-
-            this.tweens.add({
-                targets: this.player,
-                x: 207,
-                duration: Math.abs(this.player.x - 207) * 8,
-                ease: 'Linear',
-            }).on('complete', () => {
-                this.player.resetFlip();
-                this.player.anims.play('lookBack', true);
-                if (this.monitor == null) {
-                    this.monitor = this.physics.add.image(0, 0, 'monitor');
-                    this.monitor.setScale(0.67);
-                    this.monitor.setOrigin(0, 0);
-                    this.monitor.setDepth(2);
-                    this.monitor.body.allowGravity = false;
-                } else {
-                    this.monitor.visible = true;
-                }
-                this.lookingAtMonitor = true;
-            });
-
-            // if (this.player.x > 925) {
-            //     this.player.resetFlip();
-            //     this.player.toggleFlipX();
-            // }
-            // this.player.anims.play('run', true);
-            // this.tweens.add({
-            //     targets: this.player,
-            //     x: 925,
-            //     duration: Math.abs(this.player.x - 925 + 1000),
-            //     ease: 'Linear',
-            // }).on('complete', () => {
-            //     this.player.anims.play('idle', true);
-            // });
-            //     if (this.monitor == null) {
-            //         this.monitor = this.physics.add.image(0, 0, 'monitor');
-            //         this.monitor.setScale(0.67);
-            //         this.monitor.setOrigin(0, 0);
-            //         this.monitor.setDepth(2);
-            //         this.monitor.body.allowGravity = false;
-            //     } else {
-            //         this.monitor.visible = true;
-            //     }
-            //     this.lookingAtMonitor = true;
-        } else {
-            this.monitor.visible = false;
-            this.inAnimation = false;
+        if (this.inAnimation == false) {
+            this.walkToComputer.duration = Math.abs(this.player.x - 207) * 8;
         }
+        this.inAnimation = true;
+        this.readComputerText.visible = false;
+        this.player.resetFlip();
+        if (this.player.x > 207) {
+            this.player.toggleFlipX();
+        }
+        this.player.anims.play('run', true);
+        this.walkToComputer.play();
+        this.computer.on("animationcomplete", () => {
+
+        });
+        // if (!this.lookingAtMonitor) {
+        //     this.inAnimation = true;
+        //     this.player.resetFlip();
+        //     if (this.player.x > 207) {
+        //         this.player.toggleFlipX();
+        //     }
+        //     this.player.anims.play('run', true);
+
+        //     this.lookatPC = this.tweens.add({
+        //         targets: this.player,
+        //         x: 207,
+        //         duration: Math.abs(this.player.x - 207) * 8,
+        //         ease: 'Linear',
+        //     }).on('complete', () => {
+        //         this.player.resetFlip();
+        //         this.player.anims.play('lookBack', true);
+        //         if (this.monitor == null) {
+        //             this.monitor = this.physics.add.image(0, 0, 'monitor');
+        //             this.monitor.setScale(0.67);
+        //             this.monitor.setOrigin(0, 0);
+        //             this.monitor.setDepth(2);
+        //             this.monitor.body.allowGravity = false;
+        //         } else {
+        //             this.monitor.visible = true;
+        //         }
+        //         this.lookingAtMonitor = true;
+        //     });
+        // } else {
+        //     this.monitor.visible = false;
+        //     this.inAnimation = false;
+        // }
     }
 
 
@@ -364,20 +353,44 @@ export class GameScene extends Phaser.Scene {
         });
     }
 
+    createTweens() {
+        this.walkToComputer = this.tweens.create({
+            targets: this.player,
+            x: 207,
+            duration: 0,
+            ease: 'Linear',
+        }).on('complete', () => {
+            this.player.resetFlip();
+            this.player.anims.play('lookBack', true);
+            if (this.computerOn == false) {
+                this.computer.anims.play("computerOn", false);
+                this.computerOn = true;
+            }
+        });
+        this.monitorAnim = this.tweens.create({
+            targets: this.monitor,
+            scale: 0.67,
+            duration: 1000,
+            ease: 'Linear',
+        });
+    }
+
+    createColliders() {
+        this.player.setCollideWorldBounds(true);
+        this.physics.add.collider(this.player, this.platforms);
+        this.physics.add.collider(this.player, this.ladder, null, this.checkPlayerY, this);
+        this.physics.add.overlap(this.player, this.house, this.openDoor, null, this);
+        this.physics.add.overlap(this.player, this.key, this.getKey, null, this);
+        this.physics.add.overlap(this.player, this.ladder, this.climbLadder, null, this);
+        this.physics.add.overlap(this.player, this.computer, this.onComputer, null, this);
+    }
+
     checkPlayerY() {
         if (this.player.y > this.ladder.y - 50 && !this.climbing) {
             return false;
         } else {
             return true;
         }
-    }
+    };
 
-    createColliders() {
-        this.physics.add.collider(this.player, this.platforms);
-        this.physics.add.collider(this.player, this.ladder, null, this.checkPlayerY, this);
-        this.physics.add.overlap(this.player, this.house, this.openDoor, null, this);
-        this.physics.add.overlap(this.player, this.key, this.getKey, null, this);
-        this.physics.add.overlap(this.player, this.ladder, this.climbLadder, null, this);
-        this.physics.add.overlap(this.player, this.computer, this.turnOnComputer, null, this);
-    }
 }
