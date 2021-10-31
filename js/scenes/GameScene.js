@@ -1,4 +1,5 @@
 import { CTS } from "../CTS.js";
+import { Player } from "../gameObjects/Player.js";
 
 export class GameScene extends Phaser.Scene {
 
@@ -40,7 +41,8 @@ export class GameScene extends Phaser.Scene {
         this.createArrowKeys()
 
         //player
-        this.player = this.physics.add.sprite(600, 620, 'finn').setScale(2);
+        //this.player = this.physics.add.sprite(600, 620, 'finn').setScale(2);
+        this.player = new Player(this, 600, 620).setScale(2);
         //animations
         this.createAnimations();
         //collissions and overlaps
@@ -63,6 +65,7 @@ export class GameScene extends Phaser.Scene {
         this.movePlayer();
         //arrowKeys image
         this.updateKeysImage();
+        this.player.animate();
     }
     movePlayer() {
         //left, right and idle
@@ -71,15 +74,15 @@ export class GameScene extends Phaser.Scene {
         }
         if (this.cursors.left.isDown || this.cursors.a.isDown) {
             this.run(-1);
-            this.player.anims.play('run', true);
+            this.player.play('run', true);
             this.player.setFlipX(true);
         } else if (this.cursors.right.isDown || this.cursors.d.isDown) {
             this.run(1);
-            this.player.anims.play('run', true);
+            this.player.play('run', true);
             this.player.resetFlip();
         } else {
             this.player.setVelocityX(0);
-            this.player.anims.play('idle', true);
+            this.player.play('idle', true);
         }
         //jumping
         if ((this.cursors.up.isDown || this.cursors.w.isDown) && this.player.body.blocked.down && !this.climbing) {
@@ -88,7 +91,7 @@ export class GameScene extends Phaser.Scene {
 
         //jump and fall animations
         if (this.player.body.velocity.y != 0 && !this.climbing) {
-            this.player.anims.play('jump');
+            this.player.play('jump');
         }
     }
     updateKeysImage() {
