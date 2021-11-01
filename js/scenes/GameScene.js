@@ -42,7 +42,7 @@ export class GameScene extends Phaser.Scene {
 
         //player
         //this.player = this.physics.add.sprite(600, 620, 'finn').setScale(2);
-        this.player = new Player(this, 600, 620).setScale(2);
+        this.player = this.add.existing(new Player(this, 600, 620)).setScale(2);
         //animations
         this.createAnimations();
         //collissions and overlaps
